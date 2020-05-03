@@ -92,8 +92,8 @@ if __name__ == "__main__":
 
     # Debug date
     # TODO: date bug when date is not today
-    item_date = datetime.datetime.strptime("2020-04-28", "%Y-%m-%d")
-    # item_date = datetime.datetime.today()
+    # item_date = datetime.datetime.strptime("2020-04-28", "%Y-%m-%d")
+    item_date = datetime.datetime.today()
 
     r = Report(item_date)
     data = r.report()

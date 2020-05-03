@@ -53,9 +53,7 @@ class SaveArticle(Save):
 
     def save(self, url, source_id, thedate):
         u = Urler(url)
-        u.get()
-        u.get_meta()
-        u.get_readtime()
+        u.fetch()
 
         self.article = Article(
             {
@@ -73,6 +71,8 @@ class SaveArticle(Save):
         print url
         print ""
 
+        # TODO: bug with unicode characters posting weirdly to airtable
+        # TODO: take Source name out of apple news title
         self.post(self.article)
 
 
