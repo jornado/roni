@@ -5,7 +5,7 @@ import re
 import sys
 import time
 from save_article import SaveArticle
-from models import Source
+from models.source import Source
 
 
 class Backup(object):

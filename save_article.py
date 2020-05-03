@@ -5,10 +5,12 @@ Usage: save_article.py "The Source" http://someurl
 """
 
 from datetime import date
-from models import Article, Source
-from urler import Urler
 import requests
 import sys
+
+from models.article import Article
+from models.source import Source
+from urler import Urler
 
 
 class Save(object):
@@ -51,7 +53,9 @@ class SaveArticle(Save):
 
     def save(self, url, source_id, thedate):
         u = Urler(url)
+        u.get()
         u.get_meta()
+        u.get_readtime()
 
         self.article = Article(
             {
@@ -59,6 +63,7 @@ class SaveArticle(Save):
                 "Title": u.title,
                 "Notes": u.notes,
                 "Source": [source_id],
+                "MinToRead": u.min_to_read,
                 "Date": thedate,
             }
         )

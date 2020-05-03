@@ -4,14 +4,14 @@ This file is for parsing the data pulled down from The Atlantic.
 Into the format used by the Rona Report.
 """
 
-import datetime
 import collections
+import datetime
 import functools
 import json
 import math
 import operator
 
-DATA_DIR = "../src/data/"
+DATA_DIR = "./data"
 DATA_FILE = "states.json"
 STATES = ["OR", "NY", "NJ", "NC", "DC"]
 STAT = "deaths"
@@ -45,7 +45,7 @@ class Stat(object):
 
 class Stats(object):
     def __init__(self, date=None):
-        self.data = json.load(open(DATA_DIR + DATA_FILE))
+        self.data = json.load(open(DATA_DIR + "/" + DATA_FILE))
         self.states_by_day = {state: self.data[state][STAT]
                               for state in STATES}
         self.stats = []

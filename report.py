@@ -1,26 +1,30 @@
-"""This file is for outputting the Rona Report based on airtable rows."""
+"""This file is for outputting the Airtable Report based on airtable rows."""
 
 from chameleon import PageTemplateLoader
-from mailer import Mailer
-from rona import Rona
 from stats import Stats
 import datetime
 import io
 import sys
-from models import Article, Short
 
-OUT_FILE = "report.html"
+from airtable import Airtable
+from config import Config
+from mailer import Mailer
+from models.article import Article
+from models.short import Short
+
+DATA_DIR = "./data/"
+OUT_FILE = "%s/report.html" % DATA_DIR
 
 
 class Report(object):
-    """Format and send the Rona Report."""
+    """Format and send the Airtable Report."""
 
-    def __init__(self, date=None):
+    def __init__(self, thedate=None):
         """Init stuff."""
-        self.rona = Rona()
-        self.date = (date.date() or self.rona.today.date())
-        self.config = self.rona.get_config()
-        self.sources = self.rona.get_sources()
+        self.airtable = Airtable()
+        self.date = (thedate.date() or Config.today.date())
+        self.config = Config.get_config()
+        self.sources = self.airtable.get_sources()
 
     def stats(self):
         """Get deaths stats for desired states."""
@@ -36,7 +40,7 @@ class Report(object):
 
     def write_items(self, articles):
         art_urls = [article.url for article in articles]
-        self.write("\n".join(art_urls), "articles.txt")
+        self.write("\n".join(art_urls), "%s/articles.txt" % DATA_DIR)
 
     def format(self, articles, shorts):
         """Templatize the latest articles, shorts, and stats data."""
@@ -56,6 +60,7 @@ class Report(object):
     def write(self, data, filename):
         """Write it out to an HTML file."""
         character_encoding = "utf-8"
+        # TODO: bug where data is not unicode
         with io.open(filename, "w", encoding=character_encoding) as fh:
             fh.write(data)
 
@@ -63,10 +68,10 @@ class Report(object):
         """Templatize the latest articles, shorts, and stats data."""
         print "Parsing items for %s" % date
 
-        articles = self.rona.clean(
-            self.rona.get_content("Articles", "Date"), Article, self.date)
-        shorts = self.rona.clean(
-            self.rona.get_content("Shorts", "Date"), Short, self.date)
+        articles = self.airtable.clean(
+            self.airtable.get_content("Articles", "Date"), Article, self.date)
+        shorts = self.airtable.clean(
+            self.airtable.get_content("Shorts", "Date"), Short, self.date)
 
         return (articles, shorts)
 
@@ -76,6 +81,8 @@ class Report(object):
         data = self.format(articles, shorts)
         self.write(data, OUT_FILE)
 
+        return data
+
 
 if __name__ == "__main__":
     # Uncomment this to update sources
@@ -84,15 +91,16 @@ if __name__ == "__main__":
     # tmp_source.write_sources()
 
     # Debug date
-    # item_date = datetime.datetime.strptime("2020-04-28", "%Y-%m-%d")
-    item_date = datetime.datetime.today()
+    # TODO: date bug when date is not today
+    item_date = datetime.datetime.strptime("2020-04-28", "%Y-%m-%d")
+    # item_date = datetime.datetime.today()
 
     r = Report(item_date)
-    r.report()
+    data = r.report()
 
     if len(sys.argv) > 1:
         print "Uncomment me"
-        # m = Mailer()
-        # m.send(data)
+        m = Mailer()
+        m.send(data)
     else:
         print "Not sending email in debug mode, see report.html"

@@ -4,24 +4,22 @@ from datetime import date
 import json
 import requests
 
+from config import Config
 
-class Rona(object):
+DATA_DIR = "./data"
+
+
+class Airtable(object):
     """Methods for communicating for Airtable."""
 
     def __init__(self):
         """Init."""
-        self.config = self.get_config()
+        self.config = Config.get_config()
         self.today = date.today().isoformat()
-
-    def get_config(self):
-        """Load config options, such as api key and host url."""
-        filename = ".config"
-        with open(filename) as fh:
-            return json.loads(fh.read())
 
     def get_sources(self):
         """Load file that contains the id and name of all the news sources."""
-        with open("sources.json") as fh:
+        with open("%s/sources.json" % DATA_DIR) as fh:
             data = fh.read()
             return json.loads(data)
 

@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import readtime
 
+
 class Urler(object):
     def __init__(self, url):
         self.title = ""
@@ -11,20 +12,18 @@ class Urler(object):
 
     def get(self):
         res = requests.get(self.url)
-        soup = self.soup(res.text)
-        return soup
+        self.soup = BeautifulSoup(res.text, "lxml")
+        return self.soup
 
-    def soup(self, text):
-        return BeautifulSoup(text, "lxml")
+    def get_meta(self):
+        self.title = self.soup.find("meta",  property="og:title")["content"]
+        self.notes = self.soup.find(
+            "meta",  property="og:description")["content"]
 
-    def get_meta(self, soup):
-        self.title = soup.find("meta",  property="og:title")["content"]
-        self.notes = soup.find("meta",  property="og:description")["content"]
-
-    def get_readtime(self, soup):
-        for script in soup(["script", "style"]):
+    def get_readtime(self):
+        for script in self.soup(["script", "style"]):
             script.decompose()
-        text = soup.get_text()
+        text = self.soup.get_text()
 
         r = readtime.of_text(text)
         self.min_to_read = r.minutes
@@ -51,8 +50,9 @@ if __name__ == "__main__":
     url = "https://blogs.scientificamerican.com/observations/masks-and-emasculation-why-some-men-refuse-to-take-safety-precautions/"
     url = "https://www.theatlantic.com/ideas/archive/2020/05/trumps-macabre-declarations-victory/611029/"
     url = "https://www.fastcompany.com/90498707/how-nike-built-face-shields-from-shoe-parts-in-just-two-weeks"
+
     u = Urler(url)
-    soup = u.get()
-    u.get_meta(soup)
-    u.get_readtime(soup)
+    u.get()
+    u.get_meta()
+    u.get_readtime()
     print u

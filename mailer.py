@@ -1,17 +1,18 @@
 """For sending mail."""
 
-import smtplib
+from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import date
+import smtplib
+
+from config import Config
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EMAIL_SUBJECT = "The Rona Report: "
 DATE_FORMAT = "%a %b %w"
 EMAIL_SPACE = ", "
-EMAIL_LIST = "./data/email_list.txt"
-CONFIG = "./data/.config"
+EMAIL_LIST = "./data/email_list2.txt"
 
 
 class Sender(object):
@@ -41,6 +42,7 @@ class Mailer(object):
 
     def send(self, html="Hi"):
         """Send the email."""
+        print "Sending emails!"
         self.login()
 
         msg = MIMEMultipart('alternative')

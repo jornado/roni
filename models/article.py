@@ -1,19 +1,10 @@
-"""This file contains models for all the AirTable tables."""
-
-import json
 import re
-from rona import Rona
+
+from airtable import Airtable
+from models.source import Source
 
 
-class TableItem(Rona):
-    """One table from Airtable."""
-
-    def __init__(self):
-        """Init."""
-        super(TableItem, self).__init__()
-
-
-class Article(TableItem):
+class Article(Airtable):
     """One Article from Airtable."""
 
     def __init__(self, params):
@@ -108,90 +99,3 @@ class Article(TableItem):
 
         return repr
 
-
-class Source(TableItem):
-    """Article source newspaper."""
-
-    def __init__(self, id=None):
-        """Init."""
-        super(Source, self).__init__()
-        if id:
-            self.id = self.encode(id)
-
-    @property
-    def name(self):
-        """Name."""
-        return self.encode(self.get_sources()[self.id])
-
-    def get_id_from_name(self, name):
-        """Reverse dict and get ID."""
-        by_name = dict(map(reversed, self.get_sources().items()))
-        return by_name[name]
-
-    def write_sources(self):
-        """Write sources to a JSON file."""
-        with open("sources.json", "w") as fh:
-            fh.write(json.dumps(
-                self.get_sources_from_api(), indent=2))
-
-    def get_sources_from_api(self):
-        """Return all sources from Airtable API."""
-        all_sources = {}
-        sources = self.get_content("Sources", False)
-        for source in sources["records"]:
-            all_sources[source["id"]] = source["fields"]["Name"]
-
-        return all_sources
-
-    def __repr__(self):
-        """Text representation of source."""
-        repr = ""
-        if self.id:
-            repr += "\n\tID: %s" % self.id
-        if self.name:
-            repr += "\n\tName: %s" % self.name
-
-        return repr
-
-
-class Short(TableItem):
-    """One daily short."""
-
-    def __init__(self, params):
-        """Init."""
-        super(Short, self).__init__()
-
-        self._content = self.encode(params["Content"])
-        self.url = self.encode(params["URL"])
-        self.date = (params["Date"] or self.today)
-
-    @property
-    def content(self):
-        """Text content of short."""
-        return self._content
-        return self._content.decode('utf-8').strip()
-
-    @property
-    def api_url(self):
-        """Return API URL."""
-        return self.get_url("Shorts")
-
-    def format(self):
-        """Format Airtable dict."""
-        return {
-            "Content": self.content,
-            "URL": self.url,
-            "Date": self.today,
-        }
-
-    def __repr__(self):
-        """Text representation of short."""
-        repr = ""
-        if self.date:
-            repr += "\nDate: %s" % self.date
-        if self.url:
-            repr += "\nURL: %s" % self.url
-        if self.content:
-            repr += "\nContent: %s" % self.content
-
-        return repr

@@ -1,12 +1,10 @@
-# This file is for parsing stats from The Atlantic's daily health authority
-# rona stats
-
-from datetime import datetime
-import json
-import sys
+"""For parsing stats from The Atlantic's daily health auth rona stats."""
 
 from bs4 import BeautifulSoup
+from datetime import datetime
+import json
 import requests
+import sys
 
 
 URL = "https://docs.google.com/spreadsheets/u/2/d/e/2PACX-1vRwAqp96T9sYYq2-i7Tj0pvTf6XVHjDSMIKBdZHXiCGGdNC0ypEU9NbngS8mxea55JuCFuua1MUeOj5/pubhtml#"

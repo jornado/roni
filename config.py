@@ -10,11 +10,15 @@ class Config():
     def __init__(self):
         """Init."""
         self.config = Config.get_config()
-        self.today = date.today().isoformat()
+        self.today = Config.today()
+
+    @classmethod
+    def today(cls):
+        return date.today().isoformat()
 
     @classmethod
     def get_config(cls):
         """Load config options, such as api key and host url."""
-        filename = ".config"
+        filename = "./data/.config"
         with open(filename) as fh:
             return json.loads(fh.read())
