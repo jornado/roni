@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<HTML>
+<BODY style="font-size: 14pt; font-family: Georgia, Cambria, 'Times New Roman', Times, serif;">
+
+    <div style="color: #555;margin-top:20px; margin-bottom:15px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;"><h4><b>Confirmed deaths:</b></h4></div>
+    <div>
+        <ul>
+            <li tal:repeat="row stats">
+            ${row.state}: ${row.sum} (${row.change}%)
+            </li>
+        </ul>
+    </div>
+    <div style="color: #555;margin-top:20px; margin-bottom:15px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;"><h4><b>In short:</b></h4></div>
+    <div>
+        <ul>
+            <li tal:repeat="row shorts">
+              ${row.content} 
+              <span tal:condition="row.url">[<a href="${row.url}" style="color: #247BA0;">${repeat.row.index+1}</a>]</span>
+            </li>
+        </ul>
+    </div>
+    <div style="color: #555;margin-top:20px; margin-bottom:15px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;"><h4><b>Articles of interest:</b></h4></div>
+    <div>
+        <p tal:repeat="row articles">
+          <b><i>&#x25BB;&nbsp;&nbsp;<a href="${row.url}" style="color: #247BA0;">${row.title}</a></i></b> <span tal:condition="row.min_to_read">(${row.min_to_read} min)</span><br />
+            <span >${row.source.name}<br /></span>
+            <span tal:condition="row.notes">${row.notes}<br /></span>
+            <!--<span ><a href="${row.url}">${row.url}</a><br /></span>-->
+            <br/>
+        </p>
+    </div>
+
+</BODY>
+</HTML>
