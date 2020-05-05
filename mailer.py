@@ -10,9 +10,9 @@ from config import Config
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 EMAIL_SUBJECT = "The Rona Report: "
-DATE_FORMAT = "%a %b %w"
+DATE_FORMAT = "%a %b %d"
 EMAIL_SPACE = ", "
-EMAIL_LIST = "./data/email_list2.txt"
+EMAIL_LIST = "./data/email_list.txt"
 
 
 class Sender(object):

@@ -20,6 +20,7 @@ class Article(Airtable):
 
         if "Title" in params:
             self._title = self.encode(self.parse_title(params["Title"]))
+            self._title = params["Title"]
         if "Notes" in params:
             self._notes = self.encode(params["Notes"])
         if "URL" in params:
@@ -33,16 +34,34 @@ class Article(Airtable):
             self.min_to_read = params["MinToRead"]
 
     @property
+    def is_apple(self):
+        return re.search("apple.news", self.url)
+
+    @property
     def title(self):
         """Title."""
-        return self._title or ""
-        return (self._title.decode('utf-8').strip() if self._title else "")
+        if not self._title:
+            return ""
+        if self.is_apple:
+            try:
+                return self._title.encode('iso-8859-1').strip()
+            except UnicodeEncodeError:
+                return self._title
+        else: 
+            return self._title
 
     @property
     def notes(self):
         """Notes."""
-        return self._notes or ""
-        return (self._notes.decode('utf-8').strip() if self._notes else "")
+        if not self._notes:
+            return ""
+        if self.is_apple:
+            try:
+                return self._notes.encode('iso-8859-1').strip()
+            except UnicodeEncodeError:
+                return self._title
+        else: 
+            return self._notes
 
     @property
     def api_url(self):

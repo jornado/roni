@@ -91,7 +91,7 @@ if __name__ == "__main__":
     # tmp_source.write_sources()
 
     # Debug date
-    # TODO: date bug when date is not today
+    # TODO: mail date bug when date is not today
     # item_date = datetime.datetime.strptime("2020-04-28", "%Y-%m-%d")
     item_date = datetime.datetime.today()
 
