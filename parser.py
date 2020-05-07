@@ -13,7 +13,7 @@ OUTFILE = "%s/backup.html" % OUTDIR
 OUTJSON = "%s/dates.json" % OUTDIR
 STATEJSON = "%s/states.json" % OUTDIR
 RATEJSON = "%s/rates.json" % OUTDIR
-NUM_COLS = 13
+NUM_COLS = 15
 # Date
 # State
 # Positive
@@ -27,6 +27,8 @@ NUM_COLS = 13
 # On Ventilator - Cumulative
 # Recovered
 # Deaths
+# Data Quality Grade	
+# Last Update ET
 
 
 class Parser():

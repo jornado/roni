@@ -39,6 +39,7 @@ class Report(object):
         return (articles, shorts)
 
     def write_items(self, articles):
+        """Write out urls to a debug file."""
         art_urls = [article.url for article in articles]
         self.write("\n".join(art_urls), "%s/articles.txt" % DATA_DIR)
 

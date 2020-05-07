@@ -24,7 +24,7 @@ class Source(Airtable):
 
     def write_sources(self):
         """Write sources to a JSON file."""
-        with open("sources.json", "w") as fh:
+        with open("data/sources.json", "w") as fh:
             fh.write(json.dumps(
                 self.get_sources_from_api(), indent=2))
 
