@@ -20,7 +20,6 @@ class Article(Airtable):
         self.source = None
         self.min_to_read = None
 
-        print "params, ", params
         if "id" in params:
             self.id = params["id"]
         if "Title" in params:

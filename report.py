@@ -62,7 +62,6 @@ class Report(object):
     def write(self, data, filename):
         """Write it out to an HTML file."""
         character_encoding = "utf-8"
-        # TODO: bug where data is not unicode
         if not data:
             print "No data to write to file!"
             return
@@ -97,8 +96,7 @@ if __name__ == "__main__":
     tmp_source.write_sources()
 
     # Debug date
-    # TODO: mail date bug when date is not today
-    # item_date = datetime.datetime.strptime("2020-04-28", "%Y-%m-%d")
+    # item_date = datetime.datetime.strptime("2020-05-08", "%Y-%m-%d")
     item_date = datetime.datetime.today()
 
     r = Report(item_date)
