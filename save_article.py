@@ -56,20 +56,23 @@ class SaveArticle(Save):
     def strip_source(self, text, source):
         return text
 
-    def save(self, url, source_id, thedate):
+    def get_metadata(self, url):
         u = Urler(url)
         u.fetch()
 
         title = (u.title if not u.is_apple
                  else self.strip_source(u.title, source_id))
-
+        
+        return u
+        
+    def save(self, url, source_id, thedate, title, notes=None, min_to_read=None):
         self.article = Article(
             {
                 "URL": url,
                 "Title": title,
-                "Notes": u.notes,
+                "Notes": notes,
                 "Source": [source_id],
-                "MinToRead": u.min_to_read,
+                "MinToRead": min_to_read,
                 "Date": thedate,
             }
         )
@@ -79,15 +82,14 @@ class SaveArticle(Save):
         print url
         print ""
 
-        # TODO: take Source name out of apple news title
         self.post(self.article)
 
 
-# TODO: new script to move all Possible Articles marked "Use" to Articles 
 if __name__ == "__main__":
     s = SaveArticle(sys.argv[0])
     s.check_args(len(sys.argv) == 3)
 
+    url = sys.argv[2]
     thedate = date.today().isoformat()
     source = Source()
     # uncomment this to update sources
@@ -97,8 +99,12 @@ if __name__ == "__main__":
         print "No source found for %s" % sys.argv[1]
         exit
 
+    metadata = s.get_metadata(url)
     s.save(
-        url=sys.argv[2],
+        url=url,
         source_id=source_id,
         thedate=thedate,
+        title=metadata.title,
+        notes=metadata.notes,
+        min_to_read=metadata.min_to_read,
     )

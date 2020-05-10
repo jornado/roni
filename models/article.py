@@ -15,11 +15,14 @@ class Article(Airtable):
         self._title = None
         self._notes = None
         self.url = None
-        self.data = self.today
+        self.date = self.today
         self.source_id = None
         self.source = None
         self.min_to_read = None
 
+        print "params, ", params
+        if "id" in params:
+            self.id = params["id"]
         if "Title" in params:
             self._title = self.encode(self.parse_title(params["Title"]))
             self._title = params["Title"]
@@ -102,9 +105,9 @@ class Article(Airtable):
 
     def __repr__(self):
         """Return text representation."""
-        repr = ""
+        repr = "ID: %s" % self.id
         if self.title:
-            repr += "Title: %s" % self.title
+            repr += "\nTitle: %s" % self.title
         if self.min_to_read:
             repr += "\nMin to Read: %s" % self.min_to_read
         if self.date:
@@ -117,5 +120,7 @@ class Article(Airtable):
             repr += "\nNotes: %s" % self.notes
         if self.min_to_read:
             repr += "\nMin to Read: %s" % self.min_to_read
+
+        repr += "\n"
 
         return repr

@@ -42,10 +42,11 @@ class Airtable(object):
         """Full URL to an AirTable table."""
         return "{}/{}".format(self.config["host"], table)
 
-    def get_content(self, table, sort="Date", offset=0):
+    def get_content(self, table, sort="Date", offset=0, extra_params={}):
         """Pull down a list of items from an AirTable table."""
         url = self.get_url(table)
         params = self.get_params(sort, offset)
+        params.update(extra_params)
 
         res = requests.get(url, params=params)
         content = res.json()

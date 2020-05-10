@@ -16,6 +16,7 @@ class Urler(object):
         self._notes = ""
         self.url = url
         self.min_to_read = 0
+        self.source_id = ""
 
     def get(self):
         res = requests.get(self.url)
