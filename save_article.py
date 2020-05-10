@@ -3,6 +3,7 @@ This file is for saving an article to AirTable.
 
 Usage: save_article.py "The Source" http://someurl
 """
+from __future__ import absolute_import
 
 from datetime import date
 import requests
@@ -78,12 +79,11 @@ class SaveArticle(Save):
         print url
         print ""
 
-        # TODO: bug with unicode characters posting weirdly to airtable
         # TODO: take Source name out of apple news title
         self.post(self.article)
 
 
-# Test stuff
+# TODO: new script to move all Possible Articles marked "Use" to Articles 
 if __name__ == "__main__":
     s = SaveArticle(sys.argv[0])
     s.check_args(len(sys.argv) == 3)
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     thedate = date.today().isoformat()
     source = Source()
     # uncomment this to update sources
-    source.write_sources()
+    # source.write_sources()
     source_id = source.get_id_from_name(sys.argv[1])
     if not source_id:
         print "No source found for %s" % sys.argv[1]

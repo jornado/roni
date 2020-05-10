@@ -1,4 +1,5 @@
 """This file is for outputting the Airtable Report based on airtable rows."""
+from __future__ import absolute_import
 
 from chameleon import PageTemplateLoader
 from stats import Stats
@@ -62,6 +63,10 @@ class Report(object):
         """Write it out to an HTML file."""
         character_encoding = "utf-8"
         # TODO: bug where data is not unicode
+        if not data:
+            print "No data to write to file!"
+            return
+
         with io.open(filename, "w", encoding=character_encoding) as fh:
             fh.write(data)
 
@@ -69,10 +74,10 @@ class Report(object):
         """Templatize the latest articles, shorts, and stats data."""
         print "Parsing items for %s" % date
 
-        articles = self.airtable.clean(
-            self.airtable.get_content("Articles", "Date"), Article, self.date)
-        shorts = self.airtable.clean(
-            self.airtable.get_content("Shorts", "Date"), Short, self.date)
+        articles_raw, _ = self.airtable.get_content("Articles", "Date")
+        articles = self.airtable.clean(articles_raw, Article, self.date)
+        shorts_raw, _ = self.airtable.get_content("Shorts", "Date")
+        shorts = self.airtable.clean(shorts_raw, Short, self.date)
 
         return (articles, shorts)
 
@@ -87,9 +92,9 @@ class Report(object):
 
 if __name__ == "__main__":
     # Uncomment this to update sources
-    # from models import Source
-    # tmp_source = Source()
-    # tmp_source.write_sources()
+    from models.source import Source
+    tmp_source = Source()
+    tmp_source.write_sources()
 
     # Debug date
     # TODO: mail date bug when date is not today

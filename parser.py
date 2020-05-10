@@ -1,4 +1,5 @@
 """For parsing stats from The Atlantic's daily health auth rona stats."""
+from __future__ import absolute_import
 
 from bs4 import BeautifulSoup
 from datetime import datetime

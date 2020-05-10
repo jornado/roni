@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import json
 
 from airtable import Airtable
@@ -31,7 +33,10 @@ class Source(Airtable):
     def get_sources_from_api(self):
         """Return all sources from Airtable API."""
         all_sources = {}
-        sources = self.get_content("Sources", False)
+        sources, offset = self.get_content("Sources", "Name")
+        sources2, _ = self.get_content("Sources", "Name", offset)
+        sources["records"] = sources["records"] + sources2["records"]
+
         for source in sources["records"]:
             all_sources[source["id"]] = source["fields"]["Name"]
 

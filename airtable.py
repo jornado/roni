@@ -1,4 +1,5 @@
 """This file contains methods for communicating with AirTable."""
+from __future__ import absolute_import
 
 from datetime import date
 import json
@@ -23,11 +24,12 @@ class Airtable(object):
             data = fh.read()
             return json.loads(data)
 
-    def get_params(self, sort):
+    def get_params(self, sort, offset=0):
         """Parameters sent to the AirTable api when querying a list."""
         params = {
             "api_key": self.config["key"],
         }
+        params["offset"] = offset
         if sort:
             params["sort[0][field]"] = sort,
             params["sort[0][direction]"] = "desc",
@@ -40,19 +42,21 @@ class Airtable(object):
         """Full URL to an AirTable table."""
         return "{}/{}".format(self.config["host"], table)
 
-    def get_content(self, table, sort="Date"):
+    def get_content(self, table, sort="Date", offset=0):
         """Pull down a list of items from an AirTable table."""
         url = self.get_url(table)
-        params = self.get_params(sort)
+        params = self.get_params(sort, offset)
+
         res = requests.get(url, params=params)
         content = res.json()
+        offset = content["offset"] if "offset" in content else None
 
         if "error" in content:
             print res.url
             print content
             return None
 
-        return content
+        return content, offset
 
     def encode(self, text):
         """Encode to UTF-8."""

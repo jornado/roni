@@ -3,6 +3,7 @@ This file is for parsing the data pulled down from The Atlantic.
 
 Into the format used by the Rona Report.
 """
+from __future__ import absolute_import
 
 import collections
 import datetime

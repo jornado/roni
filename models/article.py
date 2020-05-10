@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import re
 
 from airtable import Airtable
@@ -47,7 +49,7 @@ class Article(Airtable):
                 return self._title.encode('iso-8859-1').strip()
             except UnicodeEncodeError:
                 return self._title
-        else: 
+        else:
             return self._title
 
     @property
@@ -60,7 +62,7 @@ class Article(Airtable):
                 return self._notes.encode('iso-8859-1').strip()
             except UnicodeEncodeError:
                 return self._title
-        else: 
+        else:
             return self._notes
 
     @property
@@ -117,4 +119,3 @@ class Article(Airtable):
             repr += "\nMin to Read: %s" % self.min_to_read
 
         return repr
-
