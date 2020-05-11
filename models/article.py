@@ -49,6 +49,8 @@ class Article(Airtable):
         if self.is_apple:
             try:
                 return self._title.encode('iso-8859-1').strip()
+            except UnicodeDecodeError:
+                return self._title
             except UnicodeEncodeError:
                 return self._title
         else:
@@ -62,8 +64,10 @@ class Article(Airtable):
         if self.is_apple:
             try:
                 return self._notes.encode('iso-8859-1').strip()
+            except UnicodeDecodeError:
+                return self._notes
             except UnicodeEncodeError:
-                return self._title
+                return self._notes
         else:
             return self._notes
 

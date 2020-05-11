@@ -76,6 +76,8 @@ class Mailer(object):
             return fh.read().split("\n")
 
 
+# TODO: send through email campaign
+# https://github.com/mailjet/mailjet-apiv3-python
 if __name__ == "__main__":
     m = Mailer()
     data = """ \
