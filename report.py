@@ -107,6 +107,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         print "Uncomment me"
         m = Mailer()
-        m.send(data)
+        m.send_to_list(data)
     else:
         print "Not sending email in debug mode, see report.html"

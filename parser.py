@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import requests
 import sys
@@ -14,6 +14,7 @@ OUTFILE = "%s/backup.html" % OUTDIR
 OUTJSON = "%s/dates.json" % OUTDIR
 STATEJSON = "%s/states.json" % OUTDIR
 RATEJSON = "%s/rates.json" % OUTDIR
+USJSON = "%s/us.json" % OUTDIR
 NUM_COLS = 15
 # Date
 # State
@@ -30,7 +31,8 @@ NUM_COLS = 15
 # Deaths
 # Data Quality Grade	
 # Last Update ET
-
+WANT_FIELDS = ["positive", "deaths", "negative", "pending", "hospitalized_current"]
+MORE_FIELDS = ["hospitalized_total", "icu_current", "icu_total", "vent_current", "vent_total", "recovered"]
 
 class Parser():
     def __init__(self, debug=None):
@@ -38,6 +40,7 @@ class Parser():
         self.results = {}
         self.state_results = {}
         self.rates = {}
+        self.us = {}
         self.debug = debug
 
     def get_data_types(self):
@@ -47,6 +50,7 @@ class Parser():
         self.get_data_from_url()
         self.parse_soup()
         self.compute_rates()
+        self.sum_fields()
         self.write_files()
 
     def get_data_from_url(self):
@@ -146,6 +150,15 @@ class Parser():
                 result, self.state_results[state], idx)
 
     def parse_result(self, columns):
+        def parse_col(idx):
+            item = columns[idx].get_text()
+            if not item:
+                return 0
+            try:
+                return int(item.replace(",", ""))
+            except ValueError:
+                return 0
+
         result = {}
         result['date'] = str(columns[0].get_text())
         if result['date'] == u'Date' or result['date'] == "":
@@ -159,19 +172,15 @@ class Parser():
         result['month'] = date.month - 1
         result['day'] = date.day
         result['date'] = date_str
-
         result['state'] = columns[1].get_text()
-        result['positive'] = columns[2].get_text()
-        result['negative'] = columns[3].get_text()
-        result['pending'] = columns[4].get_text()
-        result['hospitalized_current'] = columns[5].get_text()
-        result['hospitalized_total'] = columns[6].get_text()
-        result['icu_current'] = columns[7].get_text()
-        result['icu_total'] = columns[8].get_text()
-        result['vent_current'] = columns[9].get_text()
-        result['vent_total'] = columns[10].get_text()
-        result['recovered'] = columns[11].get_text()
-        result['deaths'] = columns[12].get_text()
+
+        idx = 2
+        for dtype in ["positive", "negative", "pending", 
+                      "hospitalized_current", "hospitalized_total", 
+                      "icu_current", "icu_total", "vent_current", 
+                      "vent_total", "recovered", "deaths"]:
+            result[dtype] = parse_col(idx)
+            idx += 1
 
         return (result, date_str)
 
@@ -185,16 +194,11 @@ class Parser():
         return state
 
     def parse_item(self, result, state, item, idx):
-
         # if (item == "positive") and result[item] < 100:
         #     return
 
         if item not in state:
             state[item] = []
-
-        result[item] = result[item].replace(",", "")
-        if result[item] == "":
-            result[item] = 0
 
         state[item].append({
             "num": int(result[item]),
@@ -211,11 +215,29 @@ class Parser():
         self.write_file(OUTJSON, self.results)
         self.write_file(STATEJSON, self.state_results)
         self.write_file(RATEJSON, self.rates)
+        self.write_file(USJSON, self.us)
 
     def write_file(self, name, results):
         with open(name, 'w') as fh:
             fh.write(json.dumps(results, indent=2))
 
+    def sum_fields(self):
+        def sum_field(day):
+            self.us[day] = {}
+            for state, data in results.iteritems():
+                for dtype in WANT_FIELDS:
+                    if dtype in self.us[day]:
+                        self.us[day][dtype] += results[state][dtype]
+                    else:
+                        self.us[day][dtype] = results[state][dtype]
+
+        today = datetime.today().strftime('%Y-%m-%d')
+        results = self.results[today]
+        sum_field(today)
+
+        yesterday = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+        results = self.results[yesterday]
+        sum_field(yesterday)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:

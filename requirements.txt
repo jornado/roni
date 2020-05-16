@@ -1,3 +1,4 @@
 requests
 chameleon
 readtime
+mailjet_rest

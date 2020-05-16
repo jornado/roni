@@ -85,6 +85,7 @@ class SaveArticle(Save):
         self.post(self.article)
 
 
+# TODO check if article url or apple url exists before inserting
 if __name__ == "__main__":
     s = SaveArticle(sys.argv[0])
     s.check_args(len(sys.argv) == 3)
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     thedate = date.today().isoformat()
     source = Source()
     # uncomment this to update sources
-    # source.write_sources()
+    source.write_sources()
     source_id = source.get_id_from_name(sys.argv[1])
     if not source_id:
         print "No source found for %s" % sys.argv[1]

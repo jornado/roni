@@ -5,6 +5,7 @@ from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+import time
 
 from config import Config
 
@@ -13,7 +14,7 @@ SMTP_PORT = 587
 EMAIL_SUBJECT = "The Rona Report: "
 DATE_FORMAT = "%a %b %d"
 EMAIL_SPACE = ", "
-EMAIL_LIST = "./data/email_list.txt"
+EMAIL_LIST = "./data/email_list2.txt"
 
 
 class Sender(object):
@@ -38,14 +39,17 @@ class Mailer(object):
     def login(self):
         """Log into Gmail."""
         self.gmail = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        self.gmail.ehlo()
         self.gmail.starttls()
         self.gmail.login(self.sender.email, self.sender.pswd)
 
-    def send(self, html="Hi"):
-        """Send the email."""
-        print "Sending emails!"
-        self.login()
+    def send(self, to, msg):
+        """Log in and send the email"""
+        print "Emailing %s" % to
+        self.gmail.sendmail(self.sender.email, [to], msg)
 
+    def format_message(self, email, html):
+        """Contruct the multipart email message."""
         msg = MIMEMultipart('alternative')
         text = "This is the Rona Report text."
         part1 = MIMEText(text, 'plain')
@@ -56,15 +60,25 @@ class Mailer(object):
 
         msg['Subject'] = EMAIL_SUBJECT + " %s" % self.date
         msg['From'] = self.sender.email
+        msg['To'] = email
+
+        return msg
+
+    def send_to_list(self, html="Hi"):
+        """Send the email."""
+        print "Sending emails!"
+
+        self.login()
 
         for email in self.recipients:
             if not email:
                 continue
 
-            print "Emailing %s" % email
-            msg['To'] = email
-            self.gmail.sendmail(
-                self.sender.email, email, msg.as_string())
+            # We must construct the full email here in the loop, else the 
+            # To line contains all the addresses for some reason
+            msg = self.format_message(email, html)
+            self.send(email, msg.as_string())
+            time.sleep(2)
 
         self.gmail.quit()
 
@@ -83,4 +97,4 @@ if __name__ == "__main__":
     data = """ \
 <html><body>Hi</body></html>
         """
-    m.send(data)
+    m.send_to_list(data)

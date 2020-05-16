@@ -14,8 +14,9 @@ import operator
 
 DATA_DIR = "./data"
 DATA_FILE = "states.json"
+US_FILE = "us.json"
 STATES = ["OR", "NY", "NJ", "NC", "DC"]
-STAT = "deaths"
+STAT = "hospitalized_current"
 
 
 class Stat(object):
@@ -46,12 +47,27 @@ class Stat(object):
 
 class Stats(object):
     def __init__(self, date=None):
+        self.us = json.load(open(DATA_DIR + "/" + US_FILE))
         self.data = json.load(open(DATA_DIR + "/" + DATA_FILE))
         self.states_by_day = {state: self.data[state][STAT]
                               for state in STATES}
         self.stats = []
         self.date = date or datetime.today()
         self.previous_date = self.date - datetime.timedelta(days=1)
+
+    def add_total_to_report(self):
+        change = self.get_change(
+            self.us[self.date.strftime('%Y-%m-%d')][STAT],
+            self.us[self.previous_date.strftime('%Y-%m-%d')][STAT])
+        self.stats.append(
+            Stat(
+                state="US",
+                date=self.date,
+                thesum=self.us[self.date.strftime('%Y-%m-%d')][STAT],
+                yesterday=self.previous_date,
+                change=change,
+            )
+        )
 
     def report(self):
         for state in STATES:
@@ -70,6 +86,7 @@ class Stats(object):
             )
 
         self.stats.sort(key=lambda x: x.rawsum, reverse=True)
+        # self.add_total_to_report()
 
         return self.stats
 
@@ -87,6 +104,8 @@ class Stats(object):
             return int(
                 math.ceil((this_sum - prev_sum) / float(prev_sum) * 100))
         except TypeError:
+            return 0
+        except ZeroDivisionError:
             return 0
 
     # Sum one stat number across days

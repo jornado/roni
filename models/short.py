@@ -11,7 +11,7 @@ class Short(Airtable):
         super(Short, self).__init__()
 
         self._content = self.encode(params["Content"])
-        self.url = self.encode(params["URL"])
+        self.url = (self.encode(params["URL"]) if "URL" in params else "")
         self.date = (params["Date"] or self.today)
 
     @property
