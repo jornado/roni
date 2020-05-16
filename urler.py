@@ -17,6 +17,7 @@ class Urler(object):
         self.url = url
         self.min_to_read = 0
         self.source_id = ""
+        self.apple_url = ""
 
     def get(self):
         res = requests.get(self.url)

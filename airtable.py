@@ -2,7 +2,9 @@
 from __future__ import absolute_import
 
 from datetime import date
+import httplib 
 import json
+import logging
 import requests
 
 from config import Config
@@ -42,12 +44,25 @@ class Airtable(object):
         """Full URL to an AirTable table."""
         return "{}/{}".format(self.config["host"], table)
 
+    def find(self, table, params={}):
+        """Pull down one item from an AirTable table."""
+        params.update({"pageSize": 1})
+        return self.get_content(table, None, None, params)
+
+    def set_debug(self):
+        httplib.HTTPConnection.debuglevel = 1
+        logging.basicConfig()
+        logging.getLogger().setLevel(logging.DEBUG)
+        req_log = logging.getLogger('requests.packages.urllib3')
+        req_log.setLevel(logging.DEBUG)
+        req_log.propagate = True
+
     def get_content(self, table, sort="Date", offset=0, extra_params={}):
         """Pull down a list of items from an AirTable table."""
         url = self.get_url(table)
         params = self.get_params(sort, offset)
         params.update(extra_params)
-
+        print params
         res = requests.get(url, params=params)
         content = res.json()
         offset = content["offset"] if "offset" in content else None

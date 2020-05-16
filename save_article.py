@@ -12,12 +12,14 @@ import sys
 from models.article import Article
 from models.source import Source
 from urler import Urler
+from airtable import Airtable
 
 
 class Save(object):
     def __init__(self, prog, args):
         self.prog = prog
         self.args = args
+        self.airtable = Airtable()
 
     def usage(self):
         return "%s [%s]" % (self.prog, self.args)
@@ -65,7 +67,7 @@ class SaveArticle(Save):
         
         return u
         
-    def save(self, url, source_id, thedate, title, notes=None, min_to_read=None):
+    def save(self, url, source_id, thedate, title, notes=None, min_to_read=None, apple_url=None):
         self.article = Article(
             {
                 "URL": url,
@@ -76,6 +78,11 @@ class SaveArticle(Save):
                 "Date": thedate,
             }
         )
+
+        if self.article_exists(apple_url):
+            print "Article already exists!"
+            return
+
         print "Saving Article"
         print self.article.title
         print self.article.notes
@@ -83,6 +90,48 @@ class SaveArticle(Save):
         print ""
 
         self.post(self.article)
+
+    def article_exists(self, apple_url=None):
+        params = {}
+        params["filterByFormula"] = "AND(URL = \"%s\")" % self.article.url
+        exists = self.find_existing("Articles", params)
+        if exists:
+            return True
+        exists = self.find_existing("Possible%20Articles", params)
+        if exists:
+            return True
+
+        if apple_url:
+            params["filterByFormula"] = "AND(URL = \"%s\")" % apple_url
+            exists = self.find_existing("Articles", params)
+            if exists:
+                return True
+            exists = self.find_existing("Possible%20Articles", params)
+            if exists:
+                return True
+
+        return False
+
+    def find_existing(self, table, params):
+        existing = self.airtable.find("Articles", params)
+
+        if (len(existing) > 0 and "records" in existing[0]
+                and len(existing[0]["records"]) > 0):
+            return True
+
+        return False
+
+    def go(self, url, thedate):
+        metadata = s.get_metadata(url)
+        s.save(
+            url=url,
+            source_id=source_id,
+            thedate=thedate,
+            title=metadata.title,
+            notes=metadata.notes,
+            min_to_read=metadata.min_to_read,
+            apple_url=metadata.apple_url,
+        )
 
 
 # TODO check if article url or apple url exists before inserting
@@ -92,6 +141,7 @@ if __name__ == "__main__":
 
     url = sys.argv[2]
     thedate = date.today().isoformat()
+
     source = Source()
     # uncomment this to update sources
     source.write_sources()
@@ -100,12 +150,4 @@ if __name__ == "__main__":
         print "No source found for %s" % sys.argv[1]
         exit
 
-    metadata = s.get_metadata(url)
-    s.save(
-        url=url,
-        source_id=source_id,
-        thedate=thedate,
-        title=metadata.title,
-        notes=metadata.notes,
-        min_to_read=metadata.min_to_read,
-    )
+    s.go(url, thedate)
