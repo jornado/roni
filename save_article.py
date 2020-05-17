@@ -114,7 +114,7 @@ class SaveArticle(Save):
 
     def find_existing(self, table, params):
         existing = self.airtable.find("Articles", params)
-
+        print existing
         if (len(existing) > 0 and "records" in existing[0]
                 and len(existing[0]["records"]) > 0):
             return True
