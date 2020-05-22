@@ -2,7 +2,7 @@
 <HTML>
 <BODY style="font-size: 14pt; font-family: Georgia, Cambria, 'Times New Roman', Times, serif;">
 
-    <div style="color: #555;margin-top:20px; margin-bottom:15px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;"><h4><b>Current hospitalizations*:</b></h4></div>
+    <div style="color: #555;margin-top:20px; margin-bottom:15px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;"><h4><b>Confirmed deaths*:</b></h4></div>
     <div>
         <ul>
             <li tal:repeat="row stats">
@@ -29,7 +29,7 @@
             <br/>
         </p>
     </div>
-    <div>* Represents state of the states 2 to 3 weeks ago.</div>
+    <div>* Represents state of the states 5 to 6 weeks ago.</div>
 
 </BODY>
 </HTML>

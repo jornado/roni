@@ -16,7 +16,7 @@ DATA_DIR = "./data"
 DATA_FILE = "states.json"
 US_FILE = "us.json"
 STATES = ["OR", "NY", "NJ", "NC", "DC"]
-STAT = "hospitalized_current"
+STAT = "deaths"
 
 
 class Stat(object):
