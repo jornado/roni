@@ -31,14 +31,17 @@ class Medium(object):
     def format(self, html, publish):
         return {
             "title": self.get_title(),
-            "url": self.get_url(),
             "contentFormat": "html",
             "content": html,
             "tags": ["covid-19", "coronavirus", "rona"],
             "publishStatus": "public" if publish else "draft",
             "license": "all-rights-reserved",
-            "licenseUrl": "https://medium.com/policy/9db0094a1e0f"
         }
+
+    def whoami(self):
+        res = requests.get(
+            "https://api.medium.com/v1/me", headers=self.get_headers())
+        print res.json()
 
     def post(self, html, publish=True):
         return requests.post(

@@ -10,6 +10,7 @@ import sys
 from airtable import Airtable
 from config import Config
 from mailer import Mailer
+from medium import Medium
 from models.article import Article
 from models.short import Short
 
@@ -103,8 +104,12 @@ if __name__ == "__main__":
     data = r.report()
 
     if len(sys.argv) > 1:
-        print "Uncomment me"
+        m = Medium()
+        res = m.post(data, True)
+        print res.json()
+
         m = Mailer()
         m.send_to_list(data)
+
     else:
         print "Not sending email in debug mode, see report.html"
