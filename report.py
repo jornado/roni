@@ -89,8 +89,6 @@ class Report(object):
         return data
 
 
-# TODO add post to Medium feature
-# https://github.com/Medium/medium-api-docs
 if __name__ == "__main__":
     # Uncomment this to update sources
     from models.source import Source

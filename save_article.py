@@ -134,7 +134,6 @@ class SaveArticle(Save):
         )
 
 
-# TODO check if article url or apple url exists before inserting
 if __name__ == "__main__":
     s = SaveArticle(sys.argv[0])
     s.check_args(len(sys.argv) == 3)
