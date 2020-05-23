@@ -36,6 +36,10 @@ class Mailer(object):
         self.recipients = self._get_emails()
         self.date = date.today().strftime(DATE_FORMAT)
 
+    @classmethod
+    def get_subject(cls):
+        return EMAIL_SUBJECT + " %s" % date.today().strftime(DATE_FORMAT)
+
     def login(self):
         """Log into Gmail."""
         self.gmail = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
@@ -58,7 +62,7 @@ class Mailer(object):
         msg.attach(part1)
         msg.attach(part2)
 
-        msg['Subject'] = EMAIL_SUBJECT + " %s" % self.date
+        msg['Subject'] = Mailer.get_subject()
         msg['From'] = self.sender.email
         msg['To'] = email
 
