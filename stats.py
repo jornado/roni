@@ -16,16 +16,17 @@ DATA_DIR = "./data"
 DATA_FILE = "states.json"
 US_FILE = "us.json"
 STATES = ["OR", "NY", "NJ", "NC", "DC"]
-STAT = "deaths"
+STAT = "hospitalized_current"
 
 
 class Stat(object):
-    def __init__(self, state, date, thesum, yesterday, change):
+    def __init__(self, state, date, thesum, yesterday, change, prevsum):
         self.state = state
         self.date = date
         self.rawsum = thesum
         self.yesterday = yesterday
         self.change = change
+        self.prevsum = prevsum
         try:
             self.sum = '{:,}'.format(thesum)
         except ValueError:
@@ -39,6 +40,8 @@ class Stat(object):
             repr += "\nDate: %s" % self.date
         if self.sum:
             repr += "\nSum: %s" % self.sum
+        if self.prevsum:
+            repr += "\nPrev Sum: %s" % self.prevsum
         if self.change:
             repr += "\nChange: %s\n" % self.change
 
@@ -53,7 +56,7 @@ class Stats(object):
                               for state in STATES}
         self.stats = []
         self.date = date or datetime.today()
-        self.previous_date = self.date - datetime.timedelta(days=1)
+        self.previous_date = self.date - datetime.timedelta(days=7)
 
     def add_total_to_report(self):
         change = self.get_change(
@@ -71,7 +74,7 @@ class Stats(object):
 
     def report(self):
         for state in STATES:
-            this_sum = self.get_day_stat(state, self.date)
+            this_sum = self.get_7_day_avg(state, self.date)
             prev_sum = self.get_day_stat(state, self.previous_date)
             change = self.get_change(this_sum, prev_sum)
 
@@ -81,6 +84,7 @@ class Stats(object):
                     date=self.date,
                     thesum=this_sum,
                     yesterday=self.previous_date,
+                    prevsum=prev_sum,
                     change=change,
                 )
             )
@@ -99,6 +103,24 @@ class Stats(object):
             if (item_date.strftime("%Y-%m-%d") == date.strftime("%Y-%m-%d")):
                 return item["num"]
 
+    def get_item_datestr(self, item):
+        date_str = "%s-%s-%s" % (
+            item["year"], item["month"]+1, item["day"])
+        return datetime.datetime.strptime(date_str, "%Y-%m-%d")
+
+    def get_7_day_avg(self, state, date):
+        total = 0
+        num_days = 7
+        date_list = [date - datetime.timedelta(days=x) for x in range(num_days)]
+
+        for item in self.states_by_day[state]:
+            item_date = self.get_item_datestr(item)
+            if item_date in date_list:
+                date = date - datetime.timedelta(days=1)
+                total += item["num"]
+        
+        return total/num_days
+
     def get_change(self, this_sum, prev_sum):
         try:
             return int(
@@ -115,7 +137,7 @@ class Stats(object):
 
 
 if __name__ == "__main__":
-    # item_date = datetime.datetime.strptime("2020-04-26", "%Y-%m-%d")
+    # item_date = datetime.datetime.strptime("2020-05-21", "%Y-%m-%d")
     item_date = datetime.datetime.today()
     s = Stats(item_date)
     print s.report()

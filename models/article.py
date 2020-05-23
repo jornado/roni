@@ -23,8 +23,7 @@ class Article(Airtable):
         if "id" in params:
             self.id = params["id"]
         if "Title" in params:
-            self._title = self.encode(self.parse_title(params["Title"]))
-            self._title = params["Title"]
+            self._title = self.encode(params["Title"])
         if "Notes" in params:
             self._notes = self.encode(params["Notes"])
         if "URL" in params:
