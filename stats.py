@@ -138,6 +138,7 @@ class Stats(object):
 
 if __name__ == "__main__":
     # item_date = datetime.datetime.strptime("2020-05-21", "%Y-%m-%d")
-    item_date = datetime.datetime.today()
+    today = datetime.datetime.today()
+    item_date = datetime.datetime.strptime("%d-%d-%d" % (today.year, today.month, today.day), "%Y-%m-%d")
     s = Stats(item_date)
     print s.report()

@@ -30,7 +30,9 @@ class Report(object):
 
     def stats(self):
         """Get deaths stats for desired states."""
-        s = Stats(self.date)
+
+        item_date = datetime.datetime.strptime("%d-%d-%d" % (self.date.year, self.date.month, self.date.day), "%Y-%m-%d")
+        s = Stats(item_date)
         return s.report()
 
     def fetch_items(self):
