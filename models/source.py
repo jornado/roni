@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import json
+import sys
 
 from airtable import Airtable
 
@@ -22,7 +23,11 @@ class Source(Airtable):
     def get_id_from_name(self, name):
         """Reverse dict and get ID."""
         by_name = dict(map(reversed, self.get_sources().items()))
-        return by_name[name]
+        if name in by_name:
+            return by_name[name]
+
+        print "Source not found"
+        sys.exit(-1)
 
     def write_sources(self):
         """Write sources to a JSON file."""
@@ -38,7 +43,8 @@ class Source(Airtable):
         sources["records"] = sources["records"] + sources2["records"]
 
         for source in sources["records"]:
-            all_sources[source["id"]] = source["fields"]["Name"]
+            if "Name" in source["fields"]:
+                all_sources[source["id"]] = source["fields"]["Name"]
 
         return all_sources
 

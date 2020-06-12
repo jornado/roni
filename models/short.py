@@ -10,7 +10,8 @@ class Short(Airtable):
         """Init."""
         super(Short, self).__init__()
 
-        self._content = self.encode(params["Content"])
+        self._content = (self.encode(params["Content"])
+                         if "Content" in params else "")
         self.url = (self.encode(params["URL"]) if "URL" in params else "")
         self.date = (params["Date"] or self.today)
 

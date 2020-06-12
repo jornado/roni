@@ -25,7 +25,6 @@
           <b><i>&#x25BB;&nbsp;&nbsp;<a href="${row.url}" style="color: #247BA0;">${row.title}</a></i></b> <span tal:condition="row.min_to_read">(${row.min_to_read} min)</span><br />
             <span >${row.source.name}<br /></span>
             <span tal:condition="row.notes">${row.notes}<br /></span>
-            <!--<span ><a href="${row.url}">${row.url}</a><br /></span>-->
             <br/>
         </p>
     </div>

@@ -15,24 +15,32 @@ OUTJSON = "%s/dates.json" % OUTDIR
 STATEJSON = "%s/states.json" % OUTDIR
 RATEJSON = "%s/rates.json" % OUTDIR
 USJSON = "%s/us.json" % OUTDIR
-NUM_COLS = 15
+NUM_COLS = 20
+
 # Date
 # State
 # Positive
 # Negative
-# Pending
-# Hospitalized - Currently
-# Hospitalized - Cumulative
-# In ICU - Currently
-# In ICU - Cumulative
-# On Ventilator - Currently
-# On Ventilator - Cumulative
+# Pending	Hospitalized  Currently
+# Hospitalized  Cumulative
+# In ICU  Currently
+# In ICU  Cumulative
+# On Ventilator  Currently
+# On Ventilator  Cumulative
 # Recovered
 # Deaths
-# Data Quality Grade	
+# Data Quality Grade
 # Last Update ET
-WANT_FIELDS = ["positive", "deaths", "negative", "pending", "hospitalized_current"]
-MORE_FIELDS = ["hospitalized_total", "icu_current", "icu_total", "vent_current", "vent_total", "recovered"]
+# Total Tests (PCR)
+# Positive Tests (PCR)
+# Negative Tests (PCR)
+# Positive Cases (PCR)
+# Total Tests (People)
+
+WANT_FIELDS = [
+    "positive", "deaths", "negative", "pending", "hospitalized_current"]
+MORE_FIELDS = ["hospitalized_total", "icu_current", "icu_total",
+               "vent_current", "vent_total", "recovered"]
 
 class Parser():
     def __init__(self, debug=None):
@@ -175,9 +183,9 @@ class Parser():
         result['state'] = columns[1].get_text()
 
         idx = 2
-        for dtype in ["positive", "negative", "pending", 
-                      "hospitalized_current", "hospitalized_total", 
-                      "icu_current", "icu_total", "vent_current", 
+        for dtype in ["positive", "negative", "pending",
+                      "hospitalized_current", "hospitalized_total",
+                      "icu_current", "icu_total", "vent_current",
                       "vent_total", "recovered", "deaths"]:
             result[dtype] = parse_col(idx)
             idx += 1
@@ -238,6 +246,7 @@ class Parser():
         yesterday = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
         results = self.results[yesterday]
         sum_field(yesterday)
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:

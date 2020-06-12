@@ -63,12 +63,10 @@ class SaveArticle(Save):
         u = Urler(url)
         u.fetch()
 
-        title = (u.title if not u.is_apple
-                 else self.strip_source(u.title, source_id))
-        
         return u
-        
-    def save(self, url, source_id, thedate, title, notes=None, min_to_read=None, apple_url=None):
+
+    def save(self, url, source_id, thedate, title, notes=None,
+             min_to_read=None, apple_url=None):
         self.article = Article(
             {
                 "URL": url,
@@ -134,6 +132,26 @@ class SaveArticle(Save):
             apple_url=metadata.apple_url,
         )
 
+def sub_common_sources(name):
+    common = {
+        "WP": "Washington Post",
+        "NYT": "New York Times",
+        "NY": "New Yorker",
+        "TA": "The Atlantic",
+        "TG": "The Guardian",
+        "WW": "Willamette Week",
+        "TO": "The Oregonian",
+        "VF": "Vanity Fair",
+        "ABC": "ABC News",
+        "CBS": "CBS News",
+        "DB": "Daily Beast",
+        "BF": "BuzzFeed News",
+        "WSJ": "Wall Street Journal",
+        "NBC": "NBC News",
+    }
+
+    return common[name] if name in common.keys() else name
+
 
 if __name__ == "__main__":
     s = SaveArticle(sys.argv[0])
@@ -145,7 +163,9 @@ if __name__ == "__main__":
     source = Source()
     # uncomment this to update sources
     source.write_sources()
-    source_id = source.get_id_from_name(sys.argv[1])
+    source_name = sub_common_sources(sys.argv[1])
+    print source_name
+    source_id = source.get_id_from_name(source_name)
     if not source_id:
         print "No source found for %s" % sys.argv[1]
         exit
