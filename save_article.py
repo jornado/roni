@@ -78,6 +78,7 @@ class SaveArticle(Save):
             }
         )
 
+        # TODO: this is broken
         if self.article_exists(apple_url):
             print "Article already exists!"
             return

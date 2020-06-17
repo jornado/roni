@@ -20,9 +20,12 @@ class Urler(object):
         self.apple_url = ""
 
     def get(self):
-        res = requests.get(self.url)
-        self.soup = BeautifulSoup(res.text, "lxml")
-        return self.soup
+        try:
+            res = requests.get(self.url)
+            self.soup = BeautifulSoup(res.text, "lxml")
+            return self.soup
+        except requests.exceptions.ReadTimeout:
+            return None
 
     def get_apple(self):
         res = requests.get(self.apple_url)
